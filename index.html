@@ -85,6 +85,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 <body>
 <div id="app"></div>
 <script>
+window.addEventListener('error',function(e){var d=document.createElement('pre');d.style.cssText='color:#E07A8F;padding:14px;white-space:pre-wrap;font-size:13px';d.textContent='Something went wrong: '+(e.message||'unknown error');document.body.appendChild(d)});
+</script>
+<script>
 'use strict';
 const COL=['#2BB5A5','#E9B949','#E07A8F','#F3E9D2'];
 const $=s=>document.querySelector(s);
@@ -150,7 +153,7 @@ function parseChat(text){
 const STOP=new Set('the and you that for are but not with have this was just your what its it\'s i\'m dont don\'t can can\'t will all get got like out his her she him they them then than there here when who how why from has had were been would could should about our one too yes yeah okay also some any really still going know think want need did does now let say see way omitted media null message deleted i\'ll that\'s i\'ve you\'re'.split(' '));
 const median=a=>{if(!a.length)return -1;const s=a.slice().sort((x,y)=>x-y),h=s.length>>1;return s.length%2?s[h]:(s[h-1]+s[h])/2};
 const ratio=(a,b)=>Math.max(a,b)===0?0:Math.min(a,b)/Math.max(a,b);
-const top=(map,n)=>[...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,n);
+const topN=(map,n)=>[...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,n);
 
 function analyze(all){
   const m=all.slice().sort((a,b)=>a.t-b.t);
@@ -204,7 +207,7 @@ function analyze(all){
   sess(sessStart,m.length-1);
   const people=names.map(n=>{const a=acc[n];return{name:n,messages:a.n,avgWords:a.words/Math.max(1,a.n-a.media),init:a.init,
     med:median(a.replies),late:a.late/a.n,laughs:a.laugh,sorrys:a.sorry,thanks:a.thanks,loves:a.love,q:a.q,bursts:a.burst,media:a.media,
-    words:top(a.w,5),emojis:top(a.e,5)}});
+    words:topN(a.w,5),emojis:topN(a.e,5)}});
   const keys=[...daily.keys()].sort();
   let streak=1,best=1,bestEnd=keys[0];
   for(let i=1;i<keys.length;i++){streak=dnKey(keys[i])-dnKey(keys[i-1])===1?streak+1:1;if(streak>best){best=streak;bestEnd=keys[i]}}
